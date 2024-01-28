@@ -1,16 +1,25 @@
-
 import UIKit
 
-class ViewController: UIViewController {
-    
+class ViewController: UIViewController, UITextViewDelegate, UITextFieldDelegate {
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        // Set the delegate for text fields
+        firstNameTextField.delegate = self
+        lastNameTextField.delegate = self
+        countryTextField.delegate = self
+        ageTextField.delegate = self
+        addDoneButtonToNumberPad()
       
+    }
+    // Implement UITextFieldDelegate method to dismiss the keyboard on pressing Done
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
     
     var informationValidate : Bool = false
-    
     
     @IBOutlet weak var firstNameTextField: UITextField!
   
@@ -27,10 +36,13 @@ class ViewController: UIViewController {
     @IBAction func addButton(_ sender: Any) {
         if informationValidate
         {
-            userInformationTextView.text = " First Name : \(firstNameTextField.text ?? "") \n Last Name : \(lastNameTextField.text ?? "") \n Age : \(ageTextField.text ?? "")"
+            userInformationTextView.text = " First Name : \(firstNameTextField.text ?? "") \(lastNameTextField.text ?? "")\n Country : \(countryTextField.text ?? "") \n Age : \(ageTextField.text ?? "")"
+                        
+            // Vertically center the text in userInformationTextView
+            let topOffset = (userInformationTextView.bounds.size.height - userInformationTextView.contentSize.height * userInformationTextView.zoomScale) / 2
+            let positiveTopOffset = max(1, topOffset)
+            userInformationTextView.contentOffset = CGPoint(x: 0, y: -positiveTopOffset)
         }
-   
-        
     }
     
     
@@ -45,7 +57,6 @@ class ViewController: UIViewController {
             messageLable.text = "Successfully submitted!"
             informationValidate = true
         }
-        
     }
     
     @IBAction func clearButton(_ sender: Any) {
@@ -56,6 +67,24 @@ class ViewController: UIViewController {
         userInformationTextView.text = nil
         messageLable.text = nil
         informationValidate = false
+    }
+    
+    // Function to add a "Done" button to the number pad keyboard
+    func addDoneButtonToNumberPad() {
+        
+           let toolbar = UIToolbar()
+           toolbar.sizeToFit()
+
+           let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonTapped))
+           toolbar.items = [doneButton]
+
+           // Assign the toolbar to the inputAccessoryView of the ageTextField
+           ageTextField.inputAccessoryView = toolbar
+       }
+
+    // method to handle the "Done" button tap
+    @objc func doneButtonTapped() {
+        ageTextField.resignFirstResponder()
     }
     
 }
